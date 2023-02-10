@@ -8,4 +8,5 @@ urlpatterns = [
    # подключались к главному приложению с префиксом products/.
    path('posts/', include('news.urls')),
    path('search/', include('news.urls')),
+   path("accounts/", include("allauth.urls")),
 ]
