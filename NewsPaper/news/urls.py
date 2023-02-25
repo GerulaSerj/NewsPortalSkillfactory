@@ -1,6 +1,12 @@
 from django.urls import path
 # Импортируем созданные нами представления
+<<<<<<< Updated upstream
 from .views import PostList, PostDetail, PostSearch, PostCreate, PostUpdate, PostDelete, ArticlesCreate, ArticlesUpdate, ArticlesDelete
+=======
+from .views import (PostList, PostDetail, PostSearch, PostCreate, PostUpdate, PostDelete, ArticlesCreate,
+   ArticlesUpdate, ArticlesDelete, subscriptions, IndexView
+)
+>>>>>>> Stashed changes
 
 urlpatterns = [
    # path — означает путь.
@@ -19,4 +25,9 @@ urlpatterns = [
    path('articles/create/', ArticlesCreate.as_view(), name='articles_create'),
    path('articles/<int:pk>/update/', ArticlesUpdate.as_view(), name='articles_update'),
    path('articles/<int:pk>/delete/', ArticlesDelete.as_view(), name='articles_delete'),
+<<<<<<< Updated upstream
+=======
+   path('subscriptions/', subscriptions, name='subscriptions'),
+   path('', IndexView.as_view()),
+>>>>>>> Stashed changes
 ]

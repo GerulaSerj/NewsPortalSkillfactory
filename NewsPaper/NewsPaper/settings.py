@@ -133,4 +133,40 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static"
+<<<<<<< Updated upstream
 ]
+=======
+]
+
+LOGIN_REDIRECT_URL = "/posts"
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_FORMS = {"signup": "account.forms.CustomSignupForm"}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "example@yandex.ru"
+EMAIL_HOST_PASSWORD = "iliezvcovrxqizez"
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+DEFAULT_FROM_EMAIL = "example@yandex.ru"
+
+SERVER_EMAIL = "example@yandex.ru"
+MANAGERS = (
+    ('Ivan', 'ivan@yandex.ru'),
+    ('Petr', 'petr@yandex.ru'),
+)
+
+
+CELERY_BROKER_URL = 'redis://default:4lwcjqUBcLMk5e5IC0I8y0SMgjQoNvFP@redis-10479.c1.asia-northeast1-1.gce.cloud.redislabs.com:10479'
+CELERY_RESULT_BACKEND = 'redis://default:4lwcjqUBcLMk5e5IC0I8y0SMgjQoNvFP@redis-10479.c1.asia-northeast1-1.gce.cloud.redislabs.com:10479'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+>>>>>>> Stashed changes
