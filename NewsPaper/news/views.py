@@ -5,30 +5,23 @@ from .models import Post
 from .filters import PostFilter
 from .forms import PostForm, ArticlesForm
 from django.urls import reverse_lazy
-<<<<<<< Updated upstream
-=======
+from django.core.cache import cache
 from django.db.models import Exists, OuterRef
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views import View
+from django.views.decorators.cache import cache_page
 
->>>>>>> Stashed changes
 
 
 class PostList(ListView):
-    # Указываем модель, объекты которой мы будем выводить
     model = Post
-    # Поле, которое будет использоваться для сортировки объектов
     ordering = 'dateCreation'
-    # Указываем имя шаблона, в котором будут все инструкции о том,
-    # как именно пользователю должны быть показаны наши объекты
     template_name = 'allnews.html'
-    # Это имя списка, в котором будут лежать все объекты.
-    # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'posts'
-    paginate_by = 10  # вот так мы можем указать количество записей на странице
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,6 +56,18 @@ class PostDetail(DetailView):
     template_name = 'news.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post'
+    queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта, как ни странно
+        obj = cache.get(f'post-{self.kwargs["pk"]}',
+                        None)  # кэш очень похож на словарь, и метод get действует так же. Он забирает значение по ключу, если его нет, то забирает None.
+
+        # если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+
+        return obj
 
 class PostCreate(CreateView):
     # Указываем нашу разработанную форму
@@ -105,9 +110,6 @@ class ArticlesUpdate(UpdateView):
 class ArticlesDelete(DeleteView):
     model = Post
     template_name = 'article_delete.html'
-<<<<<<< Updated upstream
-    success_url = reverse_lazy('article_list')
-=======
     success_url = reverse_lazy('article_list')
 
 
@@ -148,4 +150,8 @@ class IndexView(View):
                             eta = datetime.now() + timedelta(seconds=5))
         hello.delay()
         return HttpResponse('Hello!')
->>>>>>> Stashed changes
+
+
+@cache_page(60 * 15)
+def my_view(request):
+    ...

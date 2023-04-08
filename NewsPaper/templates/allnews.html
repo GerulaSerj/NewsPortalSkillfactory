@@ -9,7 +9,8 @@ Posts
 
 
 {% block content %}
-
+{% load cache %}
+    {% cache 30 header %}
    <h1>Все новости</h1>
    <h3>{{ time_now }}</h3>
    <hr>
@@ -65,5 +66,6 @@ Posts
            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
        {% endif %}
    {% endif %}
+    {% endcache %}
 
 {% endblock content %}

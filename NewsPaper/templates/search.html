@@ -10,7 +10,8 @@ Posts
 
 
 {% block content %}
-
+{% load cache %}
+    {% cache 30 header %}
    <h1>Поиск публикаций</h1>
    <h4>Всего публикаций:{{ paginator.count }}</h4>
 
@@ -20,7 +21,7 @@ Posts
        {# Добавим кнопку отправки данных формы #}
        <input type="submit" value="Найти" />
    </form>
-
+    {% endcache %}
    <hr>
    {% if posts %}
        <table>

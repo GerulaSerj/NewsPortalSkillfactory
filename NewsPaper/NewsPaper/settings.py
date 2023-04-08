@@ -55,7 +55,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'NewsPaper.urls'
@@ -81,13 +85,6 @@ WSGI_APPLICATION = 'NewsPaper.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -133,10 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static"
-<<<<<<< Updated upstream
 ]
-=======
-]
+
 
 LOGIN_REDIRECT_URL = "/posts"
 
@@ -169,4 +164,136 @@ CELERY_RESULT_BACKEND = 'redis://default:4lwcjqUBcLMk5e5IC0I8y0SMgjQoNvFP@redis-
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
->>>>>>> Stashed changes
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+CACHES = {
+    'default': {
+        'TIMEOUT': 60,
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'], # Добавляем 'require_debug_true' фильтр
+            'formatter': 'standard',
+        },
+        'general_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'general.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'level': 'INFO',
+            'filters': ['require_debug_false'], # Добавляем 'require_debug_false' фильтр
+            'formatter': 'standard',
+        },
+        'error_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'errors.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'level': 'ERROR',
+            'formatter': 'standard',
+        },
+        'security_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'security.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'level': 'INFO',
+            'formatter': 'standard',
+        },
+        'mail_admins': {
+            'class': 'django.utils.log.AdminEmailHandler',
+            'level': 'ERROR',
+            'include_html': True,
+            'filters': ['require_debug_false'], # Добавляем 'require_debug_false' фильтр
+            'formatter': 'standard',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'general_file', 'error_file', 'mail_admins'],
+            'level': 'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['error_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['error_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': ['error_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['error_file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(module)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+}
+
+def get_security_file_handler(filename):
+    security_file_handler = logging.handlers.RotatingFileHandler(
+        filename, maxBytes=10485760, backupCount=5)
+    security_file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s [%(levelname)s] %(module)s %(message)s'))
+    security_file_handler.setLevel(logging.INFO)
+    return security_file_handler
+
+
+def get_logger(logger_name):
+    logger = logging.getLogger(logger_name)
+    logger.addHandler(get_console_handler())
+    if not settings.DEBUG:
+        logger.addHandler(get_file_handler('general.log'))
+        logger.addHandler(get_mail_handler())
+    django_request_logger = logging.getLogger('django.request')
+    django_request_logger.addHandler(get_error_file_handler('errors.log'))
+    django_server_logger = logging.getLogger('django.server')
+    django_server_logger.addHandler(get_error_file_handler('errors.log'))
+    django_template_logger = logging.getLogger('django.template')
+    django_template_logger.addHandler(get_error_file_handler('errors.log'))
+    django_db_logger = logging.getLogger('django.db.backends')
+    django_db_logger.addHandler(get_error_file_handler('errors.log'))
+    django_security_logger = logging.getLogger('django.security')
+    django_security_logger.addHandler(get_security_file_handler('security.log'))
+    logger.setLevel(logging.DEBUG)
+    return logger
