@@ -1,14 +1,15 @@
 {% extends 'flatpages/default.html' %}
 
 {% load custom_filters %}
+{% load i18n %}
 
 {% block title %}
-Post
+{% trans "Post" %}
 {% endblock title %}
 
 
 {% block content %}
-<h1>{{ post.title|censor }}</h1>
-<h2>{{ post.text|censor }}</h2>
-<h3>{{ post.dateCreation|date:'M d Y' }}</h3>
+<h1>{% trans post.title|censor %}</h1>
+<h2>{% trans post.text|censor %}</h2>
+<h3>{% trans post.dateCreation|date:'M d Y' %}</h3>
 {% endblock content %}

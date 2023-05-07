@@ -1,40 +1,38 @@
 {% extends 'flatpages/default.html' %}
 
+{% load i18n %}
+
 {% load custom_filters %}
 {% load custom_tags %}
 
 {% block title %}
-Posts
+{% trans "Posts" %}
 {% endblock title %}
 
-
 {% block content %}
+<<<<<<< Updated upstream
+
+   <h1>Все новости</h1>
+=======
 {% load cache %}
     {% cache 30 header %}
-   <h1>Все новости</h1>
+   <h1>{% trans "All news" %}</h1>
+>>>>>>> Stashed changes
    <h3>{{ time_now }}</h3>
    <hr>
    {% if posts %}
        <table>
            <tr>
-               <td>Автор</td>
-               <td>Заголовок</td>
-               <td>Рейтинг</td>
-               <td>Содержание</td>
-               <td>Дата создания</td>
+               <td>{% trans "Author" %}</td>
+               <td>{% trans "Title" %}</td>
+               <td>{% trans "Rating" %}</td>
+               <td>{% trans "Content" %}</td>
+               <td>{% trans "Creation date" %}</td>
 
            </tr>
 
-           <!-- Для каждого товара будете генерироваться новая строчка,
-           т.е. новый HTML код, который указан в теле цикла.
-           При этом сам цикл работает точно так же, как и в Python.
-           product — переменная цикла, т.е. наш товар полученный из списка -->
            {% for post in posts %}
            <tr>
-               <!-- Не забываем, что переменные в шаблоне ничем не отличаются
-                от переменных в Python. Здесь также можно получать доступ к
-                полям объекта модели. Например, здесь мы выводим имя,
-                в следующем столбце описание, и т.д.  -->
                <td>{{ post.author }}</td>
                <td>{{ post.title }}</td>
                <td>{{ post.rating }}</td>
@@ -46,10 +44,9 @@ Posts
 
        </table>
    {% else %}
-       <h2>Новостей нет!</h2>
+       <h2>{% trans "No news!" %}</h2>
    {% endif %}
    {% if page_obj.has_previous %}
-       {# Для каждой ссылки пагинации указываем обработку через новый тег #}
        <a href="?{% url_replace page=1 %}">1</a>
        {% if page_obj.previous_page_number != 1 %}
            ...
@@ -66,6 +63,5 @@ Posts
            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
        {% endif %}
    {% endif %}
-    {% endcache %}
 
 {% endblock content %}

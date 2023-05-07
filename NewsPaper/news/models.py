@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
-from django.core.cache import cache
+
 
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -30,7 +30,6 @@ class Category(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-
     NEWS = 'NW'
     ARTICLE = 'AR'
     CATEGORY_CHOICES = (
@@ -44,9 +43,12 @@ class Post(models.Model):
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)
     related_name = 'post',
+    slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return f'{self.name} {self.quantity}'
+        return f'{self.title}'
+<<<<<<< Updated upstream
+=======
 
     def get_absolute_url(self):  # добавим абсолютный путь, чтобы после создания нас перебрасывало на страницу с товаром
         return f'/post/{self.id}'
@@ -54,6 +56,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
         cache.delete(f'post-{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
+>>>>>>> Stashed changes
 
     def like(self):
         self.rating +=1
@@ -73,6 +76,9 @@ class Post(models.Model):
 class PostCategory(models.Model):
     postThrough = models.ForeignKey(Post, on_delete=models.CASCADE)
     categoryThrough = models.ForeignKey(Category, on_delete=models.CASCADE)
+    slug = models.SlugField(unique=True)
+    def __str__(self):
+        return self.name
 
 
 class Comment(models.Model):

@@ -4,14 +4,15 @@
 
 {% load custom_tags %}
 
+{% load i18n %}
+
 {% block title %}
-Posts
+{% trans "Posts" %}
 {% endblock title %}
 
-
 {% block content %}
-{% load cache %}
-    {% cache 30 header %}
+<<<<<<< Updated upstream
+
    <h1>Поиск публикаций</h1>
    <h4>Всего публикаций:{{ paginator.count }}</h4>
 
@@ -21,56 +22,51 @@ Posts
        {# Добавим кнопку отправки данных формы #}
        <input type="submit" value="Найти" />
    </form>
+
+=======
+    {% load cache %}
+    {% cache 30 header %}
+       <h1>{% trans "Search Posts" %}</h1>
+       <h4>{% blocktrans count counter=paginator.count %}Total posts: {{ counter }}{% endblocktrans %}</h4>
+       <form action="" method="get">
+           {{ filterset.form.as_p }}
+           <input type="submit" value="{% trans 'Search' %}" />
+       </form>
     {% endcache %}
+>>>>>>> Stashed changes
    <hr>
    {% if posts %}
        <table>
            <tr>
-               <td>Автор</td>
-               <td>Заголовок</td>
-               <td>Рейтинг</td>
-               <td>Содержание</td>
-               <td>Дата создания</td>
-
+               <td>{% trans 'Author' %}</td>
+               <td>{% trans 'Title' %}</td>
+               <td>{% trans 'Rating' %}</td>
+               <td>{% trans 'Content' %}</td>
+               <td>{% trans 'Date Created' %}</td>
            </tr>
 
-           <!-- Для каждого товара будете генерироваться новая строчка,
-           т.е. новый HTML код, который указан в теле цикла.
-           При этом сам цикл работает точно так же, как и в Python.
-           product — переменная цикла, т.е. наш товар полученный из списка -->
            {% for post in posts %}
            <tr>
-               <!-- Не забываем, что переменные в шаблоне ничем не отличаются
-                от переменных в Python. Здесь также можно получать доступ к
-                полям объекта модели. Например, здесь мы выводим имя,
-                в следующем столбце описание, и т.д.  -->
                <td>{{ post.author }}</td>
                <td>{{ post.title }}</td>
                <td>{{ post.rating }}</td>
                <td>{{ post.text|truncatewords:20 }}</td>
                <td>{{ post.dateCreation }}</td>
-
            </tr>
            {% endfor %}
 
        </table>
    {% else %}
-       <h2>Новостей нет!</h2>
+       <h2>{% trans 'No news yet!' %}</h2>
    {% endif %}
-   {# Добавляем пагинацию на страницу #}
-
-   {# Информация о предыдущих страницах #}
    {% if page_obj.has_previous %}
-       {# Для каждой ссылки пагинации указываем обработку через новый тег #}
        <a href="?{% url_replace page=1 %}">1</a>
        {% if page_obj.previous_page_number != 1 %}
            ...
            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
        {% endif %}
    {% endif %}
-
    {{ page_obj.number }}
-
    {% if page_obj.has_next %}
        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
        {% if paginator.num_pages != page_obj.next_page_number %}
@@ -78,5 +74,4 @@ Posts
            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
        {% endif %}
    {% endif %}
-
 {% endblock content %}
